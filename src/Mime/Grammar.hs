@@ -26,12 +26,16 @@ programIndent = 4
 -- | Represent a single expression.
 repr :: Expr -> Text
 repr (Var x) = text x
+
 repr (Let x v b) = text "let "
     <.> text x
     <.> text " = " 
     <.> repr v 
     <.> text " in" 
-    <.> nest programIndent (line <.> repr b)
+    <.> case b of 
+          -- Don't indent a subsequent `let` binding.
+          Let {} -> line <.> repr b 
+          _      -> nest programIndent (line <.> repr b)
 
 repr (Lam xs b) = text "\\" 
     <.> args

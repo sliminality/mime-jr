@@ -21,9 +21,9 @@ spec = describe "repr" $ do
                                       , Lit (LNum 1) ]
         repr expr `shouldBe` 
             "let f = \\x -> x in\n\
-            \    let g = \\y -> y in\n\
-            \        f g\n\
-            \          1" 
+            \let g = \\y -> y in\n\
+            \    f g\n\
+            \      1" 
 
     it "represents nested parenthesized expressions" $ do
         let expr = Let "id" (Lam ["x"] (Var "x")) $

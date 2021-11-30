@@ -39,9 +39,15 @@ repr (Lam xs b) = text "\\"
     <.> repr b 
         where args = text (T.intercalate ", " xs)
 
-repr (App f vs) = repr f 
+repr (App f vs) = fname
     <.> text " "
-    <.> T.intercalate " " (map repr vs)
+    <.> nest (1 + T.length fname) (reprArgs vs)
+        where fname = repr f
+              reprArgs [] = nil
+              reprArgs [v'] = repr v'
+              reprArgs (v':vs') = repr v'
+                  <.> line
+                  <.> reprArgs vs'
 
 -- | Literals.
 repr (Lit (LStr s)) = text s

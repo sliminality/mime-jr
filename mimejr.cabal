@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Lib
+      Mime.Document
       Mime.Grammar
   other-modules:
       Paths_mimejr

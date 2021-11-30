@@ -2,7 +2,7 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Mime.Document where
+module Mime.Document (Doc (..), IntoDoc (..)) where
 
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -25,3 +25,6 @@ instance Doc Text where
     nest i = T.replace "\n" ("\n" <> T.replicate i " ")
 
     layout = id
+
+class IntoDoc a where
+    repr :: (Doc d) => a -> d

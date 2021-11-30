@@ -15,6 +15,7 @@ data Expr = Var Name             -- x
           | Lam Name Expr        -- \x -> e
           | App Expr Expr        -- e1 e2
           | Lit Lit              -- "hello", True, 0, etc.
+          | Par Expr             -- (e)
 
 data Lit = LStr Text     -- "hello"
          | LNum Int      -- 0, 1, 2, ...
@@ -40,4 +41,6 @@ repr (App f v) = repr f
     <.> repr v 
 repr (Lit (LStr s)) = text s
 repr (Lit (LNum n)) = text $ T.pack $ show n
-
+repr (Par e) = text "("
+    <.> nest 1 (repr e)
+    <.> text ")"

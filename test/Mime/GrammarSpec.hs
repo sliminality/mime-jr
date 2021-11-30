@@ -24,6 +24,16 @@ spec = describe "repr" $ do
             \    let g = \\y -> y in\n\
             \        f g 1" 
 
+    it "represents nested parenthesized expressions" $ do
+        let expr = Let "id" (Lam "x" (Var "x")) $
+                   App (App (Var "id")
+                            (Par (Let "id2" (Lam "y" (Var "y")) $
+                                      App (Var "id") (Var "id2")))) $
+                       Lit (LNum 433)
+        repr expr `shouldBe` 
+            "let id = \\x -> x in\n\
+            \    id (let id2 = \\y -> y in\n\
+            \         id id2) 433" 
 
 main :: IO ()
 main = hspec spec

@@ -12,8 +12,8 @@ type Name = Text
 
 data Expr = Var Name             -- x
           | Let Name Expr Expr   -- let x = e1 in e2
-          | Lam Name Expr        -- \x -> e
-          | App Expr Expr        -- e1 e2
+          | Lam [Name] Expr      -- \x1, x2 -> e
+          | App Expr [Expr]      -- e1 e2 e3
           | Lit Lit              -- "hello", True, 0, etc.
           | Par Expr             -- (e)
 
@@ -32,13 +32,18 @@ repr (Let x v b) = text "let "
     <.> repr v 
     <.> text " in" 
     <.> nest programIndent (line <.> repr b)
-repr (Lam x b) = text "\\" 
-    <.> text x
+
+repr (Lam xs b) = text "\\" 
+    <.> args
     <.> text " -> " 
-    <.> repr b
-repr (App f v) = repr f 
-    <.> text " " 
-    <.> repr v 
+    <.> repr b 
+        where args = text (T.intercalate ", " xs)
+
+repr (App f vs) = repr f 
+    <.> text " "
+    <.> T.intercalate " " (map repr vs)
+
+-- | Literals.
 repr (Lit (LStr s)) = text s
 repr (Lit (LNum n)) = text $ T.pack $ show n
 repr (Par e) = text "("

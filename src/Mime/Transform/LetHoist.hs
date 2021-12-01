@@ -12,13 +12,13 @@ import qualified Mime.Document as Doc (IntoDoc (width))
 import Mime.Grammar (Expr (..), Lit (..), Name (..))
 
 data Argument = Argument 
-    { isBound :: Bool -- | Is the argument bound or inline?
-    , width :: Int    -- | Width of the formatted argument. If bound, use the width of the bound value.
+    { isBound :: Bool -- ^ Is the argument bound or inline?
+    , width :: Int    -- ^ Width of the formatted argument. If bound, use the width of the bound value.
     } deriving (Show, Eq)
 
 data LetState = LetState 
-    { bound :: Map Name Int -- | Accumulated let-bindings and bound value widths.
-    , args :: [Argument] -- | Accumulated arguments.
+    { bound :: Map Name Int -- ^ Accumulated let-bindings and bound value widths.
+    , args :: [Argument] -- ^ Accumulated arguments.
     }
 
 emptyState :: LetState
@@ -42,8 +42,8 @@ mkArgument bs v@(Var x) = case M.lookup x bs of
 mkArgument _ v = Argument False (Doc.width v)
 
 -- | Let-hoisting transformation.
--- | Finds all of the arguments used in function applications,
--- | and computes their formatted widths.
+--   Finds all of the arguments used in function applications,
+--   and computes their formatted widths.
 getBindings :: Expr -> LetState
 getBindings = go emptyState
     where go :: LetState -> Expr -> LetState

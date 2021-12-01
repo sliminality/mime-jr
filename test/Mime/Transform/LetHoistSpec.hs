@@ -13,10 +13,12 @@ import Mime.Transform.LetHoist (getBindings, LetState (..), Argument (..))
 spec :: Spec 
 spec = describe "getBindings" $ do
     it "traverses sub-expressions" $ do 
-        -- let id = \x -> x in
-        --     id (let id2 = \y -> y 162 in
-        --             id id2)
-        --        433
+        {- 
+           let id = \x -> x in
+               id (let id2 = \y -> y 162 in
+                       id id2)
+                  433
+        -}
         let e = Let (Name "id") (Lam [Name "x"] (Var (Name "x"))) $
                 App (Var (Name "id"))
                     [ Par (Let (Name "id2") 
@@ -41,10 +43,12 @@ spec = describe "getBindings" $ do
             ]
 
     it "handles nested let without shadowing" $ do 
-        -- let outer = (let inner = 111 in
-        --              let inner2 = 2222 in 
-        --                  1) in
-        --     33
+        {- 
+           let outer = (let inner = 111 in
+                        let inner2 = 2222 in 
+                            1) in
+               33
+        -}
         let e = Let (Name "outer")
                     (Par (Let (Name "inner") (Lit (LNum 111))
                               (Let (Name "inner2") (Lit (LNum 2222))
@@ -62,10 +66,12 @@ spec = describe "getBindings" $ do
         args result `shouldBe` []
 
     it "handles nested let with shadowing" $ do 
-        -- let outer = (let inner = 111 in
-        --              let inner = 2222 in 
-        --                  1) in
-        --     33
+        {- 
+           let outer = (let inner = 111 in
+                        let inner = 2222 in 
+                            1) in
+               33
+        -}
         let e = Let (Name "outer")
                     (Par (Let (Name "inner") (Lit (LNum 111))
                               (Let (Name "inner") (Lit (LNum 2222))
@@ -82,13 +88,15 @@ spec = describe "getBindings" $ do
         args result `shouldBe` []
 
     it "handles let bindings in applications" $ do 
-        -- (\x -> let foo = 1 in
-        --            1) x 
-        --                          (let bar = 22 in
-        --                               bar)
-        --                          1
-        --                          (let baz = 333 in
-        --                               baz)
+        {- 
+           (\x -> let foo = 1 in
+                      1) x 
+                                    (let bar = 22 in
+                                         bar)
+                                    1
+                                    (let baz = 333 in
+                                         baz)
+        -}
         let e = App (Par (Lam [Name "x"] $
                                Let (Name "foo") (Lit (LNum 1)) $
                                    Lit (LNum 1)))
@@ -117,11 +125,13 @@ spec = describe "getBindings" $ do
         
 
     it "traverses into lambdas" $ do 
-        -- let outer = \foo -> let inner = 111 in
-        --                     let inner2 = 2222 in 
-        --                         inner inner2 in
-        --     f outer 
-        --       33
+        {-
+           let outer = \foo -> let inner = 111 in
+                               let inner2 = 2222 in 
+                                   inner inner2 in
+               f outer 
+                 33
+        -}
         let e = Let (Name "outer")
                     (Lam [Name "foo"] $
                          Let (Name "inner") (Lit (LNum 111)) $

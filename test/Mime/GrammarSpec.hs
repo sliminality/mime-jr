@@ -78,10 +78,12 @@ widthSpec = do
                                    , Lit (LNum 111111111111111111) ]
 
         width e `shouldBe` 24
-            -- "let f = \\x -> x in\n\
-            -- \let g = \\y -> y in\n\
-            -- \    f g\n\
-            -- \      111111111111111111"
+            {- 
+               "let f = \\x -> x in\n\
+               \let g = \\y -> y in\n\
+               \    f g\n\
+               \      111111111111111111"
+            -}
 
         let e = Let (Name "id") (Lam [Name "x"] (Var (Name "x"))) $
                 App (Var (Name "id"))
@@ -90,10 +92,12 @@ widthSpec = do
                     , Lit (LNum 433)]
 
         width e `shouldBe` 28
-            -- "let id = \\x -> x in\n\
-            -- \    id (let id2 = \\y -> y in\n\
-            -- \            id id2)\n\
-            -- \       433" 
+            {- 
+               "let id = \\x -> x in\n\
+               \    id (let id2 = \\y -> y in\n\
+               \            id id2)\n\
+               \       433" 
+            -}
 
 spec :: Spec
 spec = do

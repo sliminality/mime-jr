@@ -11,7 +11,7 @@ import Mime.Grammar
 import Mime.Transform.LetHoist
 
 spec :: Spec 
-spec = describe "getBindings" $ do
+spec = describe "getArguments" $ do
     it "traverses sub-expressions" $ do 
         {- 
            let id = \x -> x in
@@ -28,7 +28,7 @@ spec = describe "getBindings" $ do
                            App (Var (Name "id")) [Var (Name "id2")])
                     , Lit (LNum 433) ]
 
-        let result = getBindings e
+        let result = getArguments e
 
         bound result `shouldBe` M.fromList 
             [ (Name "id", T.length "\\x -> x")
@@ -54,7 +54,7 @@ spec = describe "getBindings" $ do
                                    (Lit (LNum 1)))))
                     (Lit (LNum 22))
 
-        let result = getBindings e
+        let result = getArguments e
 
         bound result `shouldBe` M.fromList 
             [ (Name "outer", 21)
@@ -75,7 +75,7 @@ spec = describe "getBindings" $ do
                                    (Lit (LNum 1)))))
                     (Lit (LNum 22))
 
-        let result = getBindings e
+        let result = getArguments e
 
         bound result `shouldBe` M.fromList 
             [ (Name "outer", 20)
@@ -105,7 +105,7 @@ spec = describe "getBindings" $ do
                                      [Var (Name "bar")]
                     ]
 
-        let result = getBindings e
+        let result = getArguments e
 
         bound result `shouldBe` M.fromList
             [ (Name "foo", 1)
@@ -138,7 +138,7 @@ spec = describe "getBindings" $ do
                          [Var (Name "outer")
                          ,Lit (LNum 33)])
                     
-        let result = getBindings e
+        let result = getArguments e
 
         bound result `shouldBe` M.fromList
             [ (Name "outer", 28)
@@ -168,7 +168,7 @@ spec = describe "getBindings" $ do
                          [Var (Name "outer")
                          ,Var (Name "inner")])
                     
-        let result = getBindings e
+        let result = getArguments e
 
         bound result `shouldBe` M.fromList
             [ (Name "outer", 28)

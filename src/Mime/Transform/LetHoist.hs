@@ -1,9 +1,10 @@
 {-# LANGUAGE LambdaCase #-}
 
 module Mime.Transform.LetHoist
-    ( getBindings
+    ( getArguments
     , LetState (..)
     , Argument (..)
+    , getExamples
     ) where
 
 import Data.Map (Map)
@@ -44,8 +45,8 @@ mkArgument _ v = Argument False (Doc.width v)
 -- | Let-hoisting transformation.
 --   Finds all of the arguments used in function applications,
 --   and computes their formatted widths.
-getBindings :: Expr -> LetState
-getBindings = go emptyState
+getArguments :: Expr -> LetState
+getArguments = go emptyState
     where go :: LetState -> Expr -> LetState
           go m = \case
             Par e        -> go m e
@@ -64,4 +65,10 @@ getBindings = go emptyState
 
             _         -> m
 
-
+-- | Returns a list of input-output pairs, where the input is 
+--   whether the argument is bound, and the output is the formatted
+--   width of the argument.
+getExamples :: Expr -> [(Bool, Int)]
+getExamples = map (\a -> (isBound a, width a)) 
+    . args 
+    . getArguments 

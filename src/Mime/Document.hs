@@ -31,3 +31,6 @@ instance Doc Text where
 
 class IntoDoc a where
     repr :: (Doc d) => a -> d
+
+    -- | Returns the total formatted width of the entity.
+    width :: a -> Int

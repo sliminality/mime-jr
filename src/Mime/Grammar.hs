@@ -4,7 +4,7 @@
 
 -- Define a simple grammr for a toy language.
 
-module Mime.Grammar (Expr (..), Lit (..), repr) where
+module Mime.Grammar (Expr (..), Lit (..)) where
 
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -26,6 +26,11 @@ indentWidth :: Int
 indentWidth = 4
 
 instance IntoDoc Expr where
+    -- | Computes the width of a formatted expression, possibly over multiple lines.
+    width :: Expr -> Int
+    width = maximum . map T.length . T.lines . repr
+
+    -- | Format an expression as a Document.
     repr :: forall d. (Doc d) => Expr -> d
     repr (Var x) = text x
 

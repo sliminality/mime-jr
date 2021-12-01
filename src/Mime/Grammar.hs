@@ -24,6 +24,9 @@ data Expr = Var Name             -- x
 data Lit = LStr Text             -- "hello"
          | LNum Int              -- 0, 1, 2, ...
 
+instance Show Expr where
+    show = T.unpack . repr
+
 indentWidth :: Int
 indentWidth = 4
 
@@ -36,10 +39,12 @@ instance IntoDoc Expr where
     repr :: forall d. (Doc d) => Expr -> d
     repr (Var (Name x)) = text x
 
-    repr (Let (Name x) v b) = text "let "
-        <.> text x
-        <.> text " = " 
-        <.> repr v 
+    repr (Let (Name x) v b) = 
+        let decl = text "let "
+                   <.> text x
+                   <.> text " = " in 
+            decl 
+        <.> nest (len decl) (repr v) 
         <.> text " in" 
         <.> case b of 
               -- Don't indent a subsequent `let` binding.

@@ -41,6 +41,17 @@ reprSpec = do
             \            id id2)\n\
             \       433" 
 
+    it "represents nested lets" $ do 
+        let e = Let (Name "outer")
+                    (Par (Let (Name "inner") (Lit (LNum 111))
+                              (Lit (LNum 1))))
+                    (Lit (LNum 22))
+
+        (repr e :: Text) `shouldBe`
+            "let outer = (let inner = 111 in\n\
+            \                 1) in\n\
+            \    22"
+
 widthSpec :: Spec
 widthSpec = do
     it "computes multi-line width" $ do

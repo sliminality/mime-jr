@@ -1,16 +1,18 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 -- Define a simple grammr for a toy language.
 
-module Mime.Grammar (Expr (..), Lit (..)) where
+module Mime.Grammar (Expr (..), Lit (..), Name (..)) where
 
 import Data.Text (Text)
 import qualified Data.Text as T
 import Mime.Document (Doc (..), IntoDoc (..))
 
-type Name = Text
+newtype Name = Name { unName :: Text } 
+    deriving (Eq, Show, Ord)
 
 data Expr = Var Name             -- x
           | Let Name Expr Expr   -- let x = e1 in e2
@@ -32,9 +34,9 @@ instance IntoDoc Expr where
 
     -- | Format an expression as a Document.
     repr :: forall d. (Doc d) => Expr -> d
-    repr (Var x) = text x
+    repr (Var (Name x)) = text x
 
-    repr (Let x v b) = text "let "
+    repr (Let (Name x) v b) = text "let "
         <.> text x
         <.> text " = " 
         <.> repr v 
@@ -45,10 +47,10 @@ instance IntoDoc Expr where
               _      -> nest indentWidth (line <.> repr b)
 
     repr (Lam xs b) = text "\\" 
-        <.> args
+        <.> text args
         <.> text " -> " 
         <.> repr b 
-            where args = text (T.intercalate ", " xs)
+            where args = T.intercalate ", " $ map unName xs
 
     repr (App f vs) = fname
         <.> text " "

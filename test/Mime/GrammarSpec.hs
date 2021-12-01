@@ -5,21 +5,21 @@ module Mime.GrammarSpec (main, spec) where
 import Data.Text (Text)
 import Test.Hspec
 import Mime.Document (IntoDoc (..))
-import Mime.Grammar (Expr (..), Lit (..))
+import Mime.Grammar (Expr (..), Lit (..), Name (..))
 
 reprSpec :: Spec
 reprSpec = do
     it "represents a simple application" $ do
-        let e = Let "f" (Lam ["x"] (Var "x")) $
-                    App (Var "f") [(Lit (LNum 1))]
+        let e = Let (Name "f") (Lam [(Name "x")] (Var (Name "x"))) $
+                    App (Var (Name "f")) [(Lit (LNum 1))]
         (repr e :: Text) `shouldBe`
             "let f = \\x -> x in\n\
             \    f 1"
 
     it "represents nested let bindings" $ do
-        let e = Let "f" (Lam ["x"] (Var "x")) $
-                Let "g" (Lam ["y"] (Var "y")) $
-                     App (Var "f") [ (Var "g")
+        let e = Let (Name "f") (Lam [(Name "x")] (Var (Name "x"))) $
+                Let (Name "g") (Lam [(Name "y")] (Var (Name "y"))) $
+                     App (Var (Name "f")) [ (Var (Name "g"))
                                    , Lit (LNum 1) ]
 
         (repr e :: Text) `shouldBe`
@@ -29,10 +29,10 @@ reprSpec = do
             \      1"
 
     it "represents nested parenthesized expressions" $ do
-        let e = Let "id" (Lam ["x"] (Var "x")) $
-                App (Var "id")
-                    [ (Par (Let "id2" (Lam ["y"] (Var "y")) $
-                                       App (Var "id") [(Var "id2")]))
+        let e = Let (Name "id") (Lam [(Name "x")] (Var (Name "x"))) $
+                App (Var (Name "id"))
+                    [ (Par (Let (Name "id2") (Lam [(Name "y")] (Var (Name "y"))) $
+                                       App (Var (Name "id")) [(Var (Name "id2"))]))
                     , Lit (LNum 433)]
 
         (repr e :: Text) `shouldBe`
@@ -44,9 +44,9 @@ reprSpec = do
 widthSpec :: Spec
 widthSpec = do
     it "computes multi-line width" $ do
-        let e = Let "f" (Lam ["x"] (Var "x")) $
-                Let "g" (Lam ["y"] (Var "y")) $
-                     App (Var "f") [ (Var "g")
+        let e = Let (Name "f") (Lam [(Name "x")] (Var (Name "x"))) $
+                Let (Name "g") (Lam [(Name "y")] (Var (Name "y"))) $
+                     App (Var (Name "f")) [ (Var (Name "g"))
                                    , Lit (LNum 111111111111111111) ]
 
         width e `shouldBe` 24
@@ -55,10 +55,10 @@ widthSpec = do
             -- \    f g\n\
             -- \      111111111111111111"
 
-        let e = Let "id" (Lam ["x"] (Var "x")) $
-                App (Var "id")
-                    [ (Par (Let "id2" (Lam ["y"] (Var "y")) $
-                                       App (Var "id") [(Var "id2")]))
+        let e = Let (Name "id") (Lam [(Name "x")] (Var (Name "x"))) $
+                App (Var (Name "id"))
+                    [ (Par (Let (Name "id2") (Lam [(Name "y")] (Var (Name "y"))) $
+                                       App (Var (Name "id")) [(Var (Name "id2"))]))
                     , Lit (LNum 433)]
 
         width e `shouldBe` 28

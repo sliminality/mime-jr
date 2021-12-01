@@ -8,7 +8,7 @@ import qualified Data.Text as T
 import Test.Hspec
 import Mime.Document (IntoDoc (..))
 import Mime.Grammar
-import Mime.Transform.LetHoist (getBindings, LetState (..), Argument (..))
+import Mime.Transform.LetHoist
 
 spec :: Spec 
 spec = describe "getBindings" $ do
@@ -32,7 +32,6 @@ spec = describe "getBindings" $ do
 
         bound result `shouldBe` M.fromList 
             [ (Name "id", T.length "\\x -> x")
-            , (Name "id2", T.length "\\y -> y 162")
             ]
 
         args result `shouldBe` 
@@ -59,8 +58,6 @@ spec = describe "getBindings" $ do
 
         bound result `shouldBe` M.fromList 
             [ (Name "outer", 21)
-            , (Name "inner", T.length "111")
-            , (Name "inner2", T.length "2222")
             ]
 
         args result `shouldBe` []
@@ -82,7 +79,6 @@ spec = describe "getBindings" $ do
 
         bound result `shouldBe` M.fromList 
             [ (Name "outer", 20)
-            , (Name "inner", T.length "2222")
             ]
 
         args result `shouldBe` []
@@ -95,7 +91,7 @@ spec = describe "getBindings" $ do
                                          bar)
                                     1
                                     (let baz = 333 in
-                                         baz)
+                                         baz bar)
         -}
         let e = App (Par (Lam [Name "x"] $
                                Let (Name "foo") (Lit (LNum 1)) $
@@ -105,21 +101,21 @@ spec = describe "getBindings" $ do
                                  Var (Name "bar")
                     , Lit (LNum 1)
                     , Par $ Let (Name "baz") (Lit (LNum 333)) $
-                                 Var (Name "baz")
+                                 App (Var (Name "baz"))
+                                     [Var (Name "bar")]
                     ]
 
         let result = getBindings e
 
         bound result `shouldBe` M.fromList
             [ (Name "foo", 1)
-            , (Name "bar", 2)
-            , (Name "baz", 3)
             ]
 
         args result `shouldBe`
             [ Argument False 1 -- x
             , Argument False (T.length "(let bar = 22 in")
             , Argument False 1 -- 1
+            , Argument False (T.length "bar") -- bar
             , Argument False (T.length "(let baz = 333 in")
             ]
         
@@ -146,8 +142,6 @@ spec = describe "getBindings" $ do
 
         bound result `shouldBe` M.fromList
             [ (Name "outer", 28)
-            , (Name "inner", T.length "111")
-            , (Name "inner2", T.length "2222")
             ]
 
         args result `shouldBe` 
@@ -156,8 +150,35 @@ spec = describe "getBindings" $ do
             , Argument True (T.length "2222") -- inner2
             ]
 
-    it "does the right thing at a given subtree?" $ do 
-        pending
+    it "only uses bindings in scope" $ do 
+        {-
+           let outer = \foo -> let inner = 111 in
+                               let inner2 = 2222 in 
+                                   inner inner2 in
+               f outer 
+                 inner -- Should not be bound!
+        -}
+        let e = Let (Name "outer")
+                    (Lam [Name "foo"] $
+                         Let (Name "inner") (Lit (LNum 111)) $
+                             Let (Name "inner2") (Lit (LNum 2222)) $
+                                 App (Var (Name "inner"))
+                                     [Var (Name "inner2")])
+                    (App (Var (Name "f"))
+                         [Var (Name "outer")
+                         ,Var (Name "inner")])
+                    
+        let result = getBindings e
+
+        bound result `shouldBe` M.fromList
+            [ (Name "outer", 28)
+            ]
+
+        args result `shouldBe` 
+            [ Argument True (T.length "\\foo -> let inner2 = 2222 in")
+            , Argument False (T.length "inner") -- inner
+            , Argument True (T.length "2222") -- inner2
+            ]
 
 main :: IO ()
 main = hspec spec

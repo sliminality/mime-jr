@@ -17,8 +17,8 @@ data Argument = Argument
     } deriving (Show, Eq)
 
 data LetState = LetState 
-    { bound :: Map Name Int -- ^ Accumulated let-bindings and bound value widths.
-    , args :: [Argument] -- ^ Accumulated arguments.
+    { bound :: Map Name Int -- ^ Let-bindings in-scope at the expression.
+    , args :: [Argument]    -- ^ Recursively accumulated arguments.
     }
 
 emptyState :: LetState
@@ -30,8 +30,8 @@ addBinding x v (LetState bs as) = LetState bs' as
     where bs' = M.insert x (Doc.width v) bs
 
 -- | Adds a new argument used in an application.
-addArgument :: LetState -> Expr -> LetState
-addArgument (LetState bs as) e = LetState bs (arg:as)
+addArgument :: LetState -> Expr -> [Argument]
+addArgument (LetState bs as) e = arg:as
     where arg = mkArgument bs e
 
 mkArgument :: Map Name Int -> Expr -> Argument
@@ -51,13 +51,15 @@ getBindings = go emptyState
             Par e        -> go m e
             Lam _ body   -> go m body
 
-            Let x v body -> go m'' body
-                where m'  = go m v -- Recur into v, get bindings.
-                      m'' = addBinding x v m'  -- Add x = v itself.
+            Let x v body -> go (addBinding x v m') body
+                -- Recur into v, get arguments (but not bindings).
+                where m' = LetState (bound m) (args $ go m v)
 
-            App f vs     -> go (foldr traverseArg m vs) f
-                where traverseArg v acc = do
-                        let acc' = addArgument acc v
+            App f vs     -> go m' f
+                where m' = LetState (bound m) (args $ foldr traverseArg m vs)
+                      traverseArg v acc = do
+                        -- Capture any arguments, but not bindings.
+                        let acc' = LetState (bound m) (addArgument acc v)
                         go acc' v -- Recur into argument.
 
             _         -> m

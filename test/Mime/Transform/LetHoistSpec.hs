@@ -65,13 +65,16 @@ spec = describe "getBindings" $ do
             ]
 
     it "handles let bindings in applications" $ do 
-        -- (\x -> let foo = 1 in 1) x 
-        --                          (let bar = 22 in bar)
+        -- (\x -> let foo = 1 in
+        --            1) x 
+        --                          (let bar = 22 in
+        --                               bar)
         --                          1
-        --                          (let baz = 333 in baz)
-        let e = App (Lam [Name "x"] $
-                         Let (Name "foo") (Lit (LNum 1)) $
-                             Lit (LNum 1))
+        --                          (let baz = 333 in
+        --                               baz)
+        let e = App (Par (Lam [Name "x"] $
+                               Let (Name "foo") (Lit (LNum 1)) $
+                                   Lit (LNum 1)))
                     [ Var (Name "x")
                     , Par $ Let (Name "bar") (Lit (LNum 22)) $
                                  Var (Name "bar")

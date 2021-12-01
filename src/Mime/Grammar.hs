@@ -59,13 +59,20 @@ instance IntoDoc Expr where
             decl
         <.> nest (len decl) (repr b) 
 
+    -- TODO: Separate case for `f` variable and `f` block (might need to indent differently).
+    -- > (\x -> let foo = 1 in
+    -- >            1) x
+    -- >                       (let bar = 22 in
+    -- >                            bar)
+    -- >                       1
+    -- >                       (let baz = 333 in
+    -- >                            baz)
     repr (App f vs) = fname
         <.> text " "
-        <.> nest (1 + len fname) (reprArgs vs)
-            where fname :: d
-                  fname = repr f
+        <.> nest (1 + width f) (reprArgs vs) 
+        -- TODO: Don't compute `repr f` twice (via `width`).
+            where fname = repr f
 
-                  reprArgs :: [Expr] -> d
                   reprArgs [] = nil
                   reprArgs [v'] = repr v'
                   reprArgs (v':vs') = repr v'

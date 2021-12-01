@@ -9,16 +9,15 @@ module Mime.Transform.LetHoist
 
 import Data.Map (Map)
 import qualified Data.Map as M
-import qualified Mime.Document as Doc (IntoDoc (width))
 import Mime.Grammar (Expr (..), Lit (..), Name (..))
 
 data Argument = Argument 
     { isBound :: Bool -- ^ Is the argument bound or inline?
-    , width :: Int    -- ^ Width of the formatted argument. If bound, use the width of the bound value.
+    , expr :: Expr -- ^ Argument. If bound, this is the bound value.
     } deriving (Show, Eq)
 
 data LetState = LetState 
-    { bound :: Map Name Int -- ^ Let-bindings in-scope at the expression.
+    { bound :: Map Name Expr -- ^ Let-bindings in-scope at the expression.
     , args :: [Argument]    -- ^ Recursively accumulated arguments.
     }
 
@@ -28,19 +27,19 @@ emptyState = LetState M.empty []
 -- | Adds a new let binding to the state.
 addBinding :: Name -> Expr -> LetState -> LetState
 addBinding x v (LetState bs as) = LetState bs' as
-    where bs' = M.insert x (Doc.width v) bs
+    where bs' = M.insert x v bs
 
 -- | Adds a new argument used in an application.
 addArgument :: LetState -> Expr -> [Argument]
 addArgument (LetState bs as) e = arg:as
     where arg = mkArgument bs e
 
-mkArgument :: Map Name Int -> Expr -> Argument
+mkArgument :: Map Name Expr -> Expr -> Argument
 mkArgument bs v@(Var x) = case M.lookup x bs of
-   Just w -> Argument True w
+   Just bv -> Argument True bv
    -- If it's not bound, compute the width of the identifier.
-   Nothing -> Argument False (Doc.width v)
-mkArgument _ v = Argument False (Doc.width v)
+   Nothing -> Argument False v
+mkArgument _ v = Argument False v
 
 -- | Let-hoisting transformation.
 --   Finds all of the arguments used in function applications,
@@ -68,7 +67,7 @@ getArguments = go emptyState
 -- | Returns a list of input-output pairs, where the input is 
 --   whether the argument is bound, and the output is the formatted
 --   width of the argument.
-getExamples :: Expr -> [(Bool, Int)]
-getExamples = map (\a -> (isBound a, width a)) 
+getExamples :: Expr -> [(Bool, Expr)]
+getExamples = map (\a -> (isBound a, expr a)) 
     . args 
     . getArguments 

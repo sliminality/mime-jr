@@ -6,12 +6,19 @@ import Data.Map (Map)
 import qualified Data.Map as M
 import qualified Data.Text as T
 import Test.Hspec
-import Mime.Document (IntoDoc (..))
+import qualified Mime.Document as Doc (IntoDoc (width))
 import Mime.Grammar
 import Mime.Transform.LetHoist
 
 spec :: Spec 
 spec = describe "getArguments" $ do
+    let argsWidth :: LetState -> [(Bool, Int)]
+        argsWidth = map (\a -> (isBound a, Doc.width $ expr a))
+            . args
+
+    let boundWidth :: LetState -> Map Name Int
+        boundWidth = fmap Doc.width . bound
+
     it "traverses sub-expressions" $ do 
         {- 
            let id = \x -> x in
@@ -30,15 +37,15 @@ spec = describe "getArguments" $ do
 
         let result = getArguments e
 
-        bound result `shouldBe` M.fromList 
+        boundWidth result `shouldBe` M.fromList 
             [ (Name "id", T.length "\\x -> x")
             ]
 
-        args result `shouldBe` 
-            [ Argument True (T.length "\\y -> y 162") -- id2
-            , Argument False 3 -- 162
-            , Argument False (T.length "(let id2 = \\y -> y 162 in") -- (let id2 ...)
-            , Argument False 3 -- 433
+        argsWidth result `shouldBe` 
+            [ (True, T.length "\\y -> y 162") -- id2
+            , (False, 3) -- 162
+            , (False, T.length "(let id2 = \\y -> y 162 in") -- (let id2 ...)
+            , (False, 3) -- 433
             ]
 
     it "handles nested let without shadowing" $ do 
@@ -56,11 +63,11 @@ spec = describe "getArguments" $ do
 
         let result = getArguments e
 
-        bound result `shouldBe` M.fromList 
+        boundWidth result `shouldBe` M.fromList 
             [ (Name "outer", 21)
             ]
 
-        args result `shouldBe` []
+        argsWidth result `shouldBe` []
 
     it "handles nested let with shadowing" $ do 
         {- 
@@ -77,11 +84,11 @@ spec = describe "getArguments" $ do
 
         let result = getArguments e
 
-        bound result `shouldBe` M.fromList 
+        boundWidth result `shouldBe` M.fromList 
             [ (Name "outer", 20)
             ]
 
-        args result `shouldBe` []
+        argsWidth result `shouldBe` []
 
     it "handles let bindings in applications" $ do 
         {- 
@@ -107,16 +114,16 @@ spec = describe "getArguments" $ do
 
         let result = getArguments e
 
-        bound result `shouldBe` M.fromList
+        boundWidth result `shouldBe` M.fromList
             [ (Name "foo", 1)
             ]
 
-        args result `shouldBe`
-            [ Argument False 1 -- x
-            , Argument False (T.length "(let bar = 22 in")
-            , Argument False 1 -- 1
-            , Argument False (T.length "bar") -- bar
-            , Argument False (T.length "(let baz = 333 in")
+        argsWidth result `shouldBe`
+            [ (False, 1) -- x
+            , (False, T.length "(let bar = 22 in")
+            , (False, 1) -- 1
+            , (False, T.length "bar") -- bar
+            , (False, T.length "(let baz = 333 in")
             ]
         
 
@@ -140,14 +147,14 @@ spec = describe "getArguments" $ do
                     
         let result = getArguments e
 
-        bound result `shouldBe` M.fromList
+        boundWidth result `shouldBe` M.fromList
             [ (Name "outer", 28)
             ]
 
-        args result `shouldBe` 
-            [ Argument True (T.length "\\foo -> let inner2 = 2222 in")
-            , Argument False 2 -- 33
-            , Argument True (T.length "2222") -- inner2
+        argsWidth result `shouldBe` 
+            [ (True, T.length "\\foo -> let inner2 = 2222 in")
+            , (False, 2) -- 33
+            , (True, T.length "2222") -- inner2
             ]
 
     it "only uses bindings in scope" $ do 
@@ -170,14 +177,14 @@ spec = describe "getArguments" $ do
                     
         let result = getArguments e
 
-        bound result `shouldBe` M.fromList
+        boundWidth result `shouldBe` M.fromList
             [ (Name "outer", 28)
             ]
 
-        args result `shouldBe` 
-            [ Argument True (T.length "\\foo -> let inner2 = 2222 in")
-            , Argument False (T.length "inner") -- inner
-            , Argument True (T.length "2222") -- inner2
+        argsWidth result `shouldBe` 
+            [ (True, T.length "\\foo -> let inner2 = 2222 in")
+            , (False, T.length "inner") -- inner
+            , (True, T.length "2222") -- inner2
             ]
 
 main :: IO ()

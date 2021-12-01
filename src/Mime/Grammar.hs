@@ -20,9 +20,11 @@ data Expr = Var Name             -- x
           | App Expr [Expr]      -- e1 e2 e3
           | Lit Lit              -- "hello", True, 0, etc.
           | Par Expr             -- (e)
+          deriving (Eq)
 
 data Lit = LStr Text             -- "hello"
          | LNum Int              -- 0, 1, 2, ...
+         deriving (Eq)
 
 instance Show Expr where
     show = T.unpack . repr

@@ -14,7 +14,8 @@ class Doc d where
     line :: d
     nest :: Int -> d -> d
     layout :: d -> Text
-
+    len :: d -> Int
+    
 instance Doc Text where
     (<.>) = (<>)
     nil = ""
@@ -25,6 +26,8 @@ instance Doc Text where
     nest i = T.replace "\n" ("\n" <> T.replicate i " ")
 
     layout = id
+
+    len = T.length
 
 class IntoDoc a where
     repr :: (Doc d) => a -> d

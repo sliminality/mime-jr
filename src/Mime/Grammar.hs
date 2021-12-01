@@ -1,5 +1,6 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 -- Define a simple grammr for a toy language.
 
@@ -25,7 +26,7 @@ indentWidth :: Int
 indentWidth = 4
 
 instance IntoDoc Expr where
-    repr :: (Doc d) => Expr -> d
+    repr :: forall d. (Doc d) => Expr -> d
     repr (Var x) = text x
 
     repr (Let x v b) = text "let "
@@ -46,11 +47,11 @@ instance IntoDoc Expr where
 
     repr (App f vs) = fname
         <.> text " "
-        <.> nest (1 + T.length fname) (reprArgs vs)
-            where fname :: (Doc d) => d
+        <.> nest (1 + len fname) (reprArgs vs)
+            where fname :: d
                   fname = repr f
 
-                  reprArgs :: (Doc d) => [Expr] -> d
+                  reprArgs :: [Expr] -> d
                   reprArgs [] = nil
                   reprArgs [v'] = repr v'
                   reprArgs (v':vs') = repr v'

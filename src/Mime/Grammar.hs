@@ -51,11 +51,13 @@ instance IntoDoc Expr where
               Let {} -> line <.> repr b 
               _      -> nest indentWidth (line <.> repr b)
 
-    repr (Lam xs b) = text "\\" 
-        <.> text args
-        <.> text " -> " 
-        <.> repr b 
-            where args = T.intercalate ", " $ map unName xs
+    repr (Lam xs b) = 
+        let args = T.intercalate ", " $ map unName xs
+            decl = text "\\" 
+                   <.> text args
+                   <.> text " -> " in
+            decl
+        <.> nest (len decl) (repr b) 
 
     repr (App f vs) = fname
         <.> text " "

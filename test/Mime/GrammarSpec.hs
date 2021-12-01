@@ -44,13 +44,30 @@ reprSpec = do
     it "represents nested lets" $ do 
         let e = Let (Name "outer")
                     (Par (Let (Name "inner") (Lit (LNum 111))
-                              (Lit (LNum 1))))
+                              (Let (Name "inner2") (Lit (LNum 222))
+                                   (Lit (LNum 1)))))
                     (Lit (LNum 22))
 
         (repr e :: Text) `shouldBe`
             "let outer = (let inner = 111 in\n\
+            \             let inner2 = 222 in\n\
             \                 1) in\n\
             \    22"
+
+        -- Nested let inside lambda.
+        let e = Let (Name "outer")
+                    (Lam [Name "foo"] $
+                         Let (Name "inner") (Lit (LNum 111)) $
+                             Let (Name "inner2") (Lit (LNum 2222)) $
+                                 Lit (LNum 1))
+                    (Lit (LNum 33))
+
+        (repr e :: Text) `shouldBe`
+            "let outer = \\foo -> let inner = 111 in\n\
+            \                    let inner2 = 2222 in\n\
+            \                        1 in\n\
+            \    33"
+
 
 widthSpec :: Spec
 widthSpec = do

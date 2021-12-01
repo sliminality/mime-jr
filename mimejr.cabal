@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 14d5759d0d9a3e4289c2c6c26d052ab7e1fb1e4b6cb3ff6feeffed7aca257283
+-- hash: cc4229b7191f97991ca2f8cbe43647f8fb83b5f4741f0ccab1d112a1f853b755
 
 name:           mimejr
 version:        0.1.0.0
@@ -30,6 +30,7 @@ library
       Lib
       Mime.Document
       Mime.Grammar
+      Mime.Guard
       Mime.Transform.LetHoist
   other-modules:
       Paths_mimejr
@@ -60,6 +61,7 @@ test-suite mimejr-test
   main-is: Spec.hs
   other-modules:
       Mime.GrammarSpec
+      Mime.GuardSpec
       Mime.Transform.LetHoistSpec
       Paths_mimejr
   hs-source-dirs:

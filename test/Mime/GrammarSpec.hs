@@ -68,6 +68,10 @@ reprSpec = do
             \                        1 in\n\
             \    33"
 
+    it "wraps string literals" $ do 
+        let e = Lit (LStr "foo")
+        (repr e :: Text) `shouldBe` "\"foo\""
+
 
 widthSpec :: Spec
 widthSpec = do

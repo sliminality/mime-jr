@@ -79,7 +79,9 @@ instance IntoDoc Expr where
                       <.> line
                       <.> reprArgs vs'
 
-    repr (Lit (LStr s)) = text s
+    repr (Lit (LStr s)) = text "\""
+        <.> text s
+        <.> text "\""
     repr (Lit (LNum n)) = text $ T.pack $ show n
     repr (Par e) = text "("
         <.> nest 1 (repr e)

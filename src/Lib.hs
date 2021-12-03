@@ -6,6 +6,7 @@ module Lib
 
 import Mime.Grammar
 import Mime.Transform.LetHoist (getExamples)
+import Mime.Synthesis (synth)
 
 sample :: Expr
 {- 
@@ -13,7 +14,7 @@ sample :: Expr
       foldr add 0 "hello"
  -}
 sample = Let (Name "add")
-             (Lam [Name "x", Name "y"] $
+             (Lam [Name "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", Name "y"] $
                   App (Var (Name "plus")) 
                       [Var (Name "x"), Var (Name "y")]) $
              App (Var (Name "foldr")) 
@@ -24,5 +25,10 @@ sample = Let (Name "add")
 
 someFunc :: IO ()
 someFunc = do
-    let exs = getExamples sample
-    print exs
+    let xs = getExamples sample
+    print xs
+
+    case synth xs 100 of
+      Just x -> print x
+      _ -> print "No solution found"
+

@@ -10,6 +10,7 @@ import Mime.Document (IntoDoc (width))
 import Mime.Grammar
 
 data N = NWidth | NConst Int
+    deriving (Show)
 
 data B = BTrue
        | BFalse
@@ -18,6 +19,7 @@ data B = BTrue
        | BAnd B B
        | BOr  B B
        | BNot B
+       deriving (Show)
 
 class Denote a b | a -> b where
     denote :: a -> Expr -> b

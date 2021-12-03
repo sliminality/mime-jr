@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cc4229b7191f97991ca2f8cbe43647f8fb83b5f4741f0ccab1d112a1f853b755
+-- hash: 97b4fcb9edea30cb719134528f18c1c73eb10a751a0c57711c5668ab3aa8dcf1
 
 name:           mimejr
 version:        0.1.0.0
@@ -31,6 +31,7 @@ library
       Mime.Document
       Mime.Grammar
       Mime.Guard
+      Mime.Synthesis
       Mime.Transform.LetHoist
   other-modules:
       Paths_mimejr

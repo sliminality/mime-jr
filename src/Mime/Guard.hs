@@ -11,7 +11,9 @@ import Mime.Grammar
 
 data N = NWidth | NConst Int
 
-data B = BGt  N N
+data B = BTrue
+       | BFalse
+       | BGt  N N
        | BEq  N N
        | BAnd B B
        | BOr  B B
@@ -25,6 +27,8 @@ instance Denote N Int where
     denote (NConst n) = const n
 
 instance Denote B Bool where
+    denote BTrue        _ = True
+    denote BFalse       _ = False
     denote (BGt  n1 n2) e = denote n1 e >  denote n2 e
     denote (BEq  n1 n2) e = denote n1 e == denote n2 e
     denote (BAnd b1 b2) e = denote b1 e && denote b2 e

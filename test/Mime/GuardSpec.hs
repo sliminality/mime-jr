@@ -34,6 +34,11 @@ bspec = do
         let e = Lit (LNum 0)
 
         it "conjunction" $ do
+            BAnd BTrue  BTrue  `denote` e `shouldBe` True
+            BAnd BTrue  BFalse `denote` e `shouldBe` False
+            BAnd BFalse BTrue  `denote` e `shouldBe` False
+            BAnd BFalse BFalse `denote` e `shouldBe` False
+
             let b = BAnd (BGt (NConst 3) (NConst 4)) 
                          (BEq (NConst 0) (NConst 0))
             b `denote` e `shouldBe` False
@@ -42,7 +47,13 @@ bspec = do
                          (BEq (NConst 0) (NConst 0))
             b `denote` e `shouldBe` True
 
+
         it "disjunction" $ do
+            BOr BTrue  BTrue  `denote` e `shouldBe` True
+            BOr BTrue  BFalse `denote` e `shouldBe` True
+            BOr BFalse BTrue  `denote` e `shouldBe` True
+            BOr BFalse BFalse `denote` e `shouldBe` False
+
             let b = BOr (BGt (NConst 3) (NConst 4)) 
                         (BEq (NConst 0) (NConst 0))
             b `denote` e `shouldBe` True
@@ -54,6 +65,10 @@ bspec = do
             let b = BOr (BGt (NConst 3) (NConst 3)) 
                         (BEq (NConst 1) (NConst 0))
             b `denote` e `shouldBe` False
+
+        it "negation" $ do
+            BNot BTrue  `denote` e `shouldBe` False
+            BNot BFalse `denote` e `shouldBe` True
 
 
 nspec :: Spec

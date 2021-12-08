@@ -29,17 +29,31 @@ sample = Let (Name "myList")
                  , Var (Name "myList")
                  ]
 
+sampleDisjoint = Let (Name "init")
+                     (Lit (LNum 0)) $
+                 Let (Name "add")
+                     (Lam [Name "x", Name "y"] $
+                          App (Var (Name "plus")) 
+                              []) $
+                     App (Var (Name "foldr")) 
+                         [ Var (Name "add")
+                         , Var (Name "init")
+                         -- , Lit (LNum 0)
+                         , Lit (LStr "hello")
+                         ]
+
 someFunc :: IO ()
 someFunc = do
     putStrLn "\n******** Synthesizing bounds for program:"
-    print sample
+    print sampleDisjoint
 
     putStrLn "\n******** Extracting examples:"
-    let xs = getExamples sample
+    let xs = getExamples sampleDisjoint
     print $ second width <$> xs
 
     putStrLn "\n******** Synthesized bound:"
-    case synth xs 100 of
+    res <- synth xs 3
+    case res of
       Just x -> print x
       _ -> print "No solution found"
 

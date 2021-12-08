@@ -16,6 +16,8 @@ import Mime.Guard
 n0 :: [N]
 n0 = [ NWidth
      , NConst 0
+     , NConst 1
+     , NConst 5
      , NConst 10
      , NConst 20
      , NConst 40
@@ -39,20 +41,26 @@ b2n = [BGt, BEq]
 b2b :: [B -> B -> B]
 b2b = [BAnd, BOr]
     
-data Programs = Programs { pn :: [N] , pb :: [B] }
+data Programs = Programs { pn :: [N] , pb :: [B] } 
+    deriving (Show)
 
 -- | Synthesize a guard that matches the given input-output examples.
 -- Thank you Armando Solar-Lezama for this blessing.
 -- https://people.csail.mit.edu/asolar/SynthesisCourse/Lecture3.htm
-synth :: [(Bool, Expr)] -> Int -> Maybe B
-synth xs iters = go iters (Programs n0 b0) 
-    where go :: Int -> Programs -> Maybe B
-          go iters ps = if iters == 0 then Nothing else do
+synth :: [(Bool, Expr)] -> Int -> IO (Maybe B)
+synth xs iters = do
+    go iters (Programs n0 b0) 
+    where go :: Int -> Programs -> IO (Maybe B)
+          go iters ps = if iters == 0 then pure Nothing else do
               let ins = map snd xs 
-              let ps' = prune ins $ grow ps
+              let ps0 = grow ps
+              print ps0
+              let ps' = prune ins ps0
+              print ps'
+              putStrLn "----------"
               case find (correct xs) (pb ps') of
                 Nothing -> go (iters - 1) ps'
-                g -> g
+                g -> pure g
 
 -- | Prune terms that are observationally equivalent.
 prune :: [Expr] -> Programs -> Programs

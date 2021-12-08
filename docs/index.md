@@ -386,7 +386,7 @@ If we run this code, we get the following output. First you can see the formatte
 
 Indeed, we can see that values with width greater than 10 are `let`-bound, while values with smaller widths are left inline. 
 
-We can use this guard when applying the transformation to a new program, hoisting any inline argument widert than 10 characters.
+We can use this guard when applying the transformation to a new program, hoisting any inline argument wider than 10 characters.
 :::
 
 \* real output

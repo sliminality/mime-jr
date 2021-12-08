@@ -117,6 +117,10 @@ A transformation $T$ rewrites a concrete syntax tree $C$.
 
 # Synthesizing guards
 
+::: notes
+So next we'll talk about how we use matchers to decide where to apply transformers.
+:::
+
 ## Synthesizing a guard
 
 Given an input program $P$, synthesize Boolean guard $g$ to determine where to apply $T$.
@@ -124,6 +128,12 @@ Given an input program $P$, synthesize Boolean guard $g$ to determine where to a
 $$\textsf{width} > 20 \lor \textsf{depth}^* > 4$$
 
 \* not implemented yet
+
+::: notes
+At a high level, our synthesis problem looks like this: we have some transformation $T$. Now given an input program $P$, we want to synthesize a Boolean guard called $g$ that tells us where $g$ should be applied.
+
+Here's an example of a guard we might synthesize: width > 20 or depth > 4, which says to apply the transformation anywhere the expression is more than 20 characters wide, or nested more than 4 levels deep.
+:::
 
 ## Guard language
 
@@ -138,6 +148,12 @@ $$
 
 $$\textsf{width} > 20 \lor \textsf{depth} > 4$$
 
+::: notes
+We'll use a DSL to describe guards. There are two components: numerical-valued guards, which denote natural numbers, and Boolean-valued guards, which denote Booleans.
+
+We have all of the usual Boolean constructs like True, False, And, Or, and Not. In addition, we have constant natural numbers and an operator called `width`, which describes the width of a an expression's concrete syntax in characters.
+:::
+
 ## Extracting examples
 
 ```hs
@@ -151,6 +167,16 @@ let add = \x, y -> plus x
 
 Each program admits a set of pairs `(argument, isBound)`
 
+::: notes
+Now let's take a look at how to extract input-output examples for our synthesis problem. Consider the following program, which defines two variables: a string called `myList`, and a lambda called `add`. 
+
+In addition, we have a function application of `foldr` to three arguments:
+- `add`, which is defined above,
+- the constant value `0`
+- and the string `myList`, also defined above.
+
+We can think of each argument as an input, with an output Boolean corresponding to whether or not the argument is defined elsewhere.
+:::
 
 ## Extracting examples
 
@@ -186,6 +212,12 @@ let add = \x, y -> plus x
 :::
 :::
 
+::: notes
+Here is a table summarizing each argument, whether or not it is `let`-bound, the corresponding expression, and the width of that expression. Note that for inline arguments we just take the width of the argument itself, but for bound arguments we take the width of the bound value.
+
+These arguments form the input-output pairs for our synthesis problem.
+:::
+
 ## Denotational semantics for guards
 
 ::: {.columns style="font-size: 0.8em;"}
@@ -209,6 +241,14 @@ $$
 
 ::: {.column width=45%}
 :::
+:::
+
+::: notes
+In order to formalize the notion of "width", let's take a step back and provide the denotational semantics for our guard DSL.
+
+The denotation of Booleans, denoted with the subscript 2, is a function from concrete syntax trees to Boolean values.
+
+We use the standard rules for Boolean algebra, lifting each operator into the meta-language.
 :::
 
 ## Denotational semantics for guards
@@ -239,14 +279,28 @@ $$
 \newcommand\nden[2]{\llbracket #1 \rrbracket_\mathbb{N} \, #2}
 \begin{aligned}
 \nden{c}& e = c \in \mathbb{N} \\
-\nden{\mathrm{width}}& {e} = \textsf{width}(e) \\
+\nden{\mathrm{width}}& {e} = \max \left( {\textsf{len}(e_i)} \right ),
+ \; \forall e_i \in e \\
 \nden{\mathrm{depth}}&{e} = \textsf{depth}(e) \\
 \end{aligned}
 $$
 :::
 :::
 
-## $\llbracket \textsf{width} \rrbracket_\mathbb{N} \, \texttt{add} = 15$
+::: notes
+For naturals, the denotation is a function from concrete syntax trees to natural numbers.
+
+Numeric literals denote the corresponding literal value, while operators like `width` and `depth` denote properties of the given expression's concrete syntax tree.
+
+Let's take a look at what that means.
+:::
+
+---
+
+### $\newcommand\nden[2]{\llbracket #1 \rrbracket_\mathbb{N} \, #2}
+\nden{\mathrm{width}} {e} = \max \left( {\textsf{len}(e_i)} \right ),
+ \; \forall e_i \in e$
+
 
 ```hs
 let myList = "abcdefghijklmnopqr" in
@@ -259,6 +313,12 @@ let add = \x, y -> plus x
           0
           myList
 ```
+
+::: notes
+Here we have the expression `add`, which spans multiple lines.
+
+To take its width, we look at the length of the longest line, starting from the leftmost position of the first line. `width` is 15 characters long in its longest line, so the denotation of `width` on `add` is 15.
+:::
 
 ## Recap
 
@@ -297,6 +357,12 @@ main = do
 :::
 :::
 
+::: notes
+The final step is to synthesize a guard.
+
+On the left we have an input program corresponding to the example we've been studying, and on the right we have some code to extract examples and synthesize a guard.
+:::
+
 ## Synthesizing guards
 
 ```{.hs style="font-size: 0.8em;"}
@@ -314,6 +380,14 @@ let add = \x, y -> plus x
 ******** Synthesized guard:
 width > 10
 ```
+
+::: notes
+If we run this code, we get the following output. First you can see the formatted program, followed by the input-output examples, and finally the synthesized guard.
+
+Indeed, we can see that values with width greater than 10 are `let`-bound, while values with smaller widths are left inline. 
+
+We can use this guard when applying the transformation to a new program, hoisting any inline argument widert than 10 characters.
+:::
 
 \* real output
 

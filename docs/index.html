@@ -3,15 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
-  <meta name="author" content="Slim Lim">
-  <meta name="author" content="Justin Lubin">
-  <title>index</title>
+  <meta name="author" content="Slim Lim, Justin Lubin">
+  <title>Code formatting by example</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
   <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
   <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
   <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
     span.underline{text-decoration: underline;}
@@ -106,12 +108,9 @@
     <div class="slides">
 
 <section id="title-slide">
-  <h1 class="title"><div style="font-size: 0.8em; margin-bottom: 0.5em;">
-<img src='mime-jr.png' style='height: 1.5em; position: relative; top: 55px;'/><span style="font-weight: 400;">Mime Jr.</span><img src='https://www.serebii.net/pokedex-dp/evo/439.png' style='height: 1.5em; position: relative; top: 55px;'/>
-</div>
-Code formatting<br>by example</h1>
-  <p class="author">Slim Lim</p>
-  <p class="author">Justin Lubin</p>
+  <h1 class="title">Code formatting by example</h1>
+  <p class="subtitle">Hello</p>
+  <p class="author">Slim Lim, Justin Lubin</p>
 </section>
 
 <section>
@@ -210,13 +209,19 @@ Code formatting<br>by example</h1>
 <section>
 <section id="synthesizing-guards" class="title-slide slide level1">
 <h1>Synthesizing guards</h1>
-
+<aside class="notes">
+<p>So next we’ll talk about how we use matchers to decide where to apply transformers.</p>
+</aside>
 </section>
 <section id="synthesizing-a-guard" class="slide level2">
 <h2>Synthesizing a guard</h2>
 <p>Given an input program <span class="math inline">P</span>, synthesize Boolean guard <span class="math inline">g</span> to determine where to apply <span class="math inline">T</span>.</p>
 <p><span class="math display">\textsf{width} &gt; 20 \lor \textsf{depth}^* &gt; 4</span></p>
 <p>* not implemented yet</p>
+<aside class="notes">
+<p>At a high level, our synthesis problem looks like this: we have some transformation <span class="math inline">T</span>. Now given an input program <span class="math inline">P</span>, we want to synthesize a Boolean guard called <span class="math inline">g</span> that tells us where <span class="math inline">g</span> should be applied.</p>
+<p>Here’s an example of a guard we might synthesize: width &gt; 20 or depth &gt; 4, which says to apply the transformation anywhere the expression is more than 20 characters wide, or nested more than 4 levels deep.</p>
+</aside>
 </section>
 <section id="guard-language" class="slide level2">
 <h2>Guard language</h2>
@@ -228,6 +233,10 @@ Code formatting<br>by example</h1>
 </span></p>
 <div class="fragment">
 <p><span class="math display">\textsf{width} &gt; 20 \lor \textsf{depth} &gt; 4</span></p>
+<aside class="notes">
+<p>We’ll use a DSL to describe guards. There are two components: numerical-valued guards, which denote natural numbers, and Boolean-valued guards, which denote Booleans.</p>
+<p>We have all of the usual Boolean constructs like True, False, And, Or, and Not. In addition, we have constant natural numbers and an operator called <code>width</code>, which describes the width of a an expression’s concrete syntax in characters.</p>
+</aside>
 </div>
 </section>
 <section id="extracting-examples" class="slide level2">
@@ -239,6 +248,11 @@ Code formatting<br>by example</h1>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>          <span class="dv">0</span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>          myList</span></code></pre></div>
 <p>Each program admits a set of pairs <code>(argument, isBound)</code></p>
+<aside class="notes">
+<p>Now let’s take a look at how to extract input-output examples for our synthesis problem. Consider the following program, which defines two variables: a string called <code>myList</code>, and a lambda called <code>add</code>.</p>
+<p>In addition, we have a function application of <code>foldr</code> to three arguments: - <code>add</code>, which is defined above, - the constant value <code>0</code> - and the string <code>myList</code>, also defined above.</p>
+<p>We can think of each argument as an input, with an output Boolean corresponding to whether or not the argument is defined elsewhere.</p>
+</aside>
 </section>
 <section id="extracting-examples-1" class="slide level2">
 <h2>Extracting examples</h2>
@@ -269,38 +283,43 @@ Code formatting<br>by example</h1>
 <tbody>
 <tr class="odd">
 <td><code>add</code></td>
-<td>✅ |</td>
-<td><code>hs                  |  \x, y -&gt; plus x                y</code></td>
+<td>✅</td>
+<td><div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>\x, y <span class="ot">-&gt;</span> plus x</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>              y</span></code></pre></div></td>
 <td>15</td>
 </tr>
 <tr class="even">
 <td><code>0</code></td>
-<td>❌ |</td>
-<td><code>0</code> |</td>
+<td>❌</td>
+<td><code>0</code></td>
 <td>1</td>
 </tr>
 <tr class="odd">
 <td><code>myList</code></td>
-<td>✅ |</td>
-<td><code>"abcdefghijklmnopqr"</code> |</td>
+<td>✅</td>
+<td><code>"abcdefghijklmnopqr"</code></td>
 <td>20</td>
 </tr>
 <tr class="even">
 <td><code>x</code></td>
-<td>❌ |</td>
-<td><code>x</code> |</td>
+<td>❌</td>
+<td><code>x</code></td>
 <td>1</td>
 </tr>
 <tr class="odd">
 <td><code>y</code></td>
-<td>❌ |</td>
-<td><code>y</code> |</td>
+<td>❌</td>
+<td><code>y</code></td>
 <td>1</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
+<aside class="notes">
+<p>Here is a table summarizing each argument, whether or not it is <code>let</code>-bound, the corresponding expression, and the width of that expression. Note that for inline arguments we just take the width of the argument itself, but for bound arguments we take the width of the bound value.</p>
+<p>These arguments form the input-output pairs for our synthesis problem.</p>
+</aside>
 </section>
 <section id="denotational-semantics-for-guards" class="slide level2">
 <h2>Denotational semantics for guards</h2>
@@ -326,6 +345,11 @@ Code formatting<br>by example</h1>
 
 </div>
 </div>
+<aside class="notes">
+<p>In order to formalize the notion of “width”, let’s take a step back and provide the denotational semantics for our guard DSL.</p>
+<p>The denotation of Booleans, denoted with the subscript 2, is a function from concrete syntax trees to Boolean values.</p>
+<p>We use the standard rules for Boolean algebra, lifting each operator into the meta-language.</p>
+</aside>
 </section>
 <section id="denotational-semantics-for-guards-1" class="slide level2">
 <h2>Denotational semantics for guards</h2>
@@ -355,24 +379,35 @@ Code formatting<br>by example</h1>
 \newcommand\nden[2]{\llbracket #1 \rrbracket_\mathbb{N} \, #2}
 \begin{aligned}
 \nden{c}&amp; e = c \in \mathbb{N} \\
-\nden{\mathrm{width}}&amp; {e} = \textsf{width}(e) \\
+\nden{\mathrm{width}}&amp; {e} = \max \left( {\textsf{len}(e_i)} \right ),
+ \; \forall e_i \in e \\
 \nden{\mathrm{depth}}&amp;{e} = \textsf{depth}(e) \\
 \end{aligned}
 </span></p>
 </div>
 </div>
+<aside class="notes">
+<p>For naturals, the denotation is a function from concrete syntax trees to natural numbers.</p>
+<p>Numeric literals denote the corresponding literal value, while operators like <code>width</code> and <code>depth</code> denote properties of the given expression’s concrete syntax tree.</p>
+<p>Let’s take a look at what that means.</p>
+</aside>
 </section>
-<section id="llbracket-textsfwidth-rrbracket_mathbbn-textttadd-15" class="slide level2">
-<h2><span class="math inline">\llbracket \textsf{width} \rrbracket_\mathbb{N} \, \texttt{add} = 15</span></h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> myList <span class="ot">=</span> <span class="st">&quot;abcdefghijklmnopqr&quot;</span> <span class="kw">in</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">--        vvvvvvvvvvvvvvv</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> add <span class="ot">=</span> \x, y <span class="ot">-&gt;</span> plus x</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                        y <span class="kw">in</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">--        ^^^^^^^^^^^^^^^ </span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">--        15 characters wide</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">foldr</span> add</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>          <span class="dv">0</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>          myList</span></code></pre></div>
+<section class="slide level2">
+
+<h3 id="newcommandnden2llbracket-1-rrbracket_mathbbn-2-ndenmathrmwidth-e-max-left-textsflene_i-right-forall-e_i-in-e"><span class="math inline">\newcommand\nden[2]{\llbracket #1 \rrbracket_\mathbb{N} \, #2} \nden{\mathrm{width}} {e} = \max \left( {\textsf{len}(e_i)} \right ),  \; \forall e_i \in e</span></h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> myList <span class="ot">=</span> <span class="st">&quot;abcdefghijklmnopqr&quot;</span> <span class="kw">in</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">--        vvvvvvvvvvvvvvv</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> add <span class="ot">=</span> \x, y <span class="ot">-&gt;</span> plus x</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                        y <span class="kw">in</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">--        ^^^^^^^^^^^^^^^ </span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">--        15 characters wide</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">foldr</span> add</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>          <span class="dv">0</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>          myList</span></code></pre></div>
+<aside class="notes">
+<p>Here we have the expression <code>add</code>, which spans multiple lines.</p>
+<p>To take its width, we look at the length of the longest line, starting from the leftmost position of the first line. <code>width</code> is 15 characters long in its longest line, so the denotation of <code>width</code> on <code>add</code> is 15.</p>
+</aside>
 </section>
 <section id="recap" class="slide level2">
 <h2>Recap</h2>
@@ -387,40 +422,49 @@ Code formatting<br>by example</h1>
 <p>Using <strong>bottom-up enumerative synthesis</strong> (<a href="https://people.csail.mit.edu/asolar/SynthesisCourse/Lecture3.htm">Armando Solar-Lezama</a>)</p>
 <div class="columns" style="font-size: 0.8em;">
 <div class="column">
-<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>test <span class="ot">=</span> <span class="dt">Let</span> (<span class="dt">Name</span> <span class="st">&quot;myList&quot;</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>           (<span class="dt">Lit</span> (<span class="dt">LStr</span> <span class="st">&quot;abcdefghijklmnopqrstuvwxyz&quot;</span>)) <span class="op">$</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>       <span class="dt">Let</span> (<span class="dt">Name</span> <span class="st">&quot;add&quot;</span>)</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>           (<span class="dt">Lam</span> [<span class="dt">Name</span> <span class="st">&quot;x&quot;</span>, <span class="dt">Name</span> <span class="st">&quot;y&quot;</span>] <span class="op">$</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                <span class="dt">App</span> (<span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;plus&quot;</span>)) </span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                    [<span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;x&quot;</span>), <span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;y&quot;</span>)]) <span class="op">$</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>           <span class="dt">App</span> (<span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;foldr&quot;</span>)) </span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>               [ <span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;add&quot;</span>)</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>               , <span class="dt">Lit</span> (<span class="dt">LNum</span> <span class="dv">0</span>)</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>               , <span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;myList&quot;</span>) ]</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>test <span class="ot">=</span> <span class="dt">Let</span> (<span class="dt">Name</span> <span class="st">&quot;myList&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>           (<span class="dt">Lit</span> (<span class="dt">LStr</span> <span class="st">&quot;abcdefghijklmnopqrstuvwxyz&quot;</span>)) <span class="op">$</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>       <span class="dt">Let</span> (<span class="dt">Name</span> <span class="st">&quot;add&quot;</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>           (<span class="dt">Lam</span> [<span class="dt">Name</span> <span class="st">&quot;x&quot;</span>, <span class="dt">Name</span> <span class="st">&quot;y&quot;</span>] <span class="op">$</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                <span class="dt">App</span> (<span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;plus&quot;</span>)) </span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                    [<span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;x&quot;</span>), <span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;y&quot;</span>)]) <span class="op">$</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>           <span class="dt">App</span> (<span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;foldr&quot;</span>)) </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>               [ <span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;add&quot;</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>               , <span class="dt">Lit</span> (<span class="dt">LNum</span> <span class="dv">0</span>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>               , <span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;myList&quot;</span>) ]</span></code></pre></div>
 </div><div class="column">
-<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    res <span class="ot">&lt;-</span> synth (getExamples test) <span class="dv">3</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">case</span> res <span class="kw">of</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">Just</span> x <span class="ot">-&gt;</span> <span class="fu">print</span> x</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>      _ <span class="ot">-&gt;</span> <span class="fu">print</span> <span class="st">&quot;No solution found&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    res <span class="ot">&lt;-</span> synth (getExamples test) <span class="dv">3</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">case</span> res <span class="kw">of</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">Just</span> x <span class="ot">-&gt;</span> <span class="fu">print</span> x</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>      _ <span class="ot">-&gt;</span> <span class="fu">print</span> <span class="st">&quot;No solution found&quot;</span></span></code></pre></div>
 </div>
 </div>
+<aside class="notes">
+<p>The final step is to synthesize a guard.</p>
+<p>On the left we have an input program corresponding to the example we’ve been studying, and on the right we have some code to extract examples and synthesize a guard.</p>
+</aside>
 </section>
 <section id="synthesizing-guards-2" class="slide level2">
 <h2>Synthesizing guards</h2>
-<div class="sourceCode" id="cb14" style="font-size: 0.8em;"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="op">********</span> <span class="dt">Synthesizing</span> guards for program<span class="op">:</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> myList <span class="ot">=</span> <span class="st">&quot;abcdefghijklmnopqrstuvwxyz&quot;</span> <span class="kw">in</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> add <span class="ot">=</span> \x, y <span class="ot">-&gt;</span> plus x</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                        y <span class="kw">in</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">foldr</span> add</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>          <span class="dv">0</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>          myList</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="op">********</span> <span class="dt">Extracting</span> examples<span class="op">:</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>[(<span class="dt">True</span>,<span class="dv">15</span>),(<span class="dt">False</span>,<span class="dv">1</span>),(<span class="dt">True</span>,<span class="dv">28</span>),(<span class="dt">False</span>,<span class="dv">1</span>),(<span class="dt">False</span>,<span class="dv">1</span>)]</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="op">********</span> <span class="dt">Synthesized</span> guard<span class="op">:</span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>width <span class="op">&gt;</span> <span class="dv">10</span></span></code></pre></div>
+<div class="sourceCode" id="cb15" style="font-size: 0.8em;"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="op">********</span> <span class="dt">Synthesizing</span> guards for program<span class="op">:</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> myList <span class="ot">=</span> <span class="st">&quot;abcdefghijklmnopqrstuvwxyz&quot;</span> <span class="kw">in</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> add <span class="ot">=</span> \x, y <span class="ot">-&gt;</span> plus x</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                        y <span class="kw">in</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">foldr</span> add</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>          <span class="dv">0</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>          myList</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="op">********</span> <span class="dt">Extracting</span> examples<span class="op">:</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>[(<span class="dt">True</span>,<span class="dv">15</span>),(<span class="dt">False</span>,<span class="dv">1</span>),(<span class="dt">True</span>,<span class="dv">28</span>),(<span class="dt">False</span>,<span class="dv">1</span>),(<span class="dt">False</span>,<span class="dv">1</span>)]</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="op">********</span> <span class="dt">Synthesized</span> guard<span class="op">:</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>width <span class="op">&gt;</span> <span class="dv">10</span></span></code></pre></div>
+<aside class="notes">
+<p>If we run this code, we get the following output. First you can see the formatted program, followed by the input-output examples, and finally the synthesized guard.</p>
+<p>Indeed, we can see that values with width greater than 10 are <code>let</code>-bound, while values with smaller widths are left inline.</p>
+<p>We can use this guard when applying the transformation to a new program, hoisting any inline argument wider than 10 characters.</p>
+</aside>
 <p>* real output</p>
 </section></section>
 <section id="future-work" class="title-slide slide level1">
@@ -482,7 +526,7 @@ Code formatting<br>by example</h1>
 
         // Add the current slide number to the URL hash so that reloading the
         // page/copying the URL will return you to the same slide
-        hash: false,
+        hash: true,
 
         // Start with 1 for the hash rather than 0
         hashOneBasedIndex: false,

@@ -41,6 +41,16 @@
 }
 
 /*********************************
+ * Title slide
+ *********************************/
+
+.reveal .subtitle {
+    font-style: italic;
+    font-size: var(--r-heading3-size);
+    margin-bottom: var(--r-heading-margin);
+}
+
+/*********************************
  * Inline code
  *********************************/
 

@@ -1,5 +1,5 @@
 ---
-title: "<div style='font-size: 0.8em; margin-bottom: 0.5em;'><img src='https://www.serebii.net/pokedex-dp/evo/439.png' style='height: 1.5em; position: relative; top: 55px;'/><span style='font-weight: 400;'>Mime Jr.</span><img src='https://www.serebii.net/pokedex-dp/evo/439.png' style='height: 1.5em; position: relative; top: 55px;'/></div>Code formatting<br>by example"
+title: "<div style='font-size: 0.8em; margin-bottom: 0.5em;'><img src='mime-jr.png' style='height: 1.5em; position: relative; top: 55px;'/><span style='font-weight: 400;'>Mime Jr.</span><img src='https://www.serebii.net/pokedex-dp/evo/439.png' style='height: 1.5em; position: relative; top: 55px;'/></div>Code formatting<br>by example"
 author:
     - Slim Lim
     - Justin Lubin

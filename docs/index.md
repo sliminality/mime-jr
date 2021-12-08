@@ -271,8 +271,8 @@ let add = \x, y -> plus x
 Using **bottom-up enumerative synthesis** ([Armando Solar-Lezama](https://people.csail.mit.edu/asolar/SynthesisCourse/Lecture3.htm))
 
 ::: {.columns style="font-size: 0.8em;"}
-::: {.column width=55%}
-```{.hs style="font-size: 0.8em;"}
+::: column
+```hs
 test = Let (Name "myList")
            (Lit (LStr "abcdefghijklmnopqrstuvwxyz")) $
        Let (Name "add")
@@ -283,17 +283,22 @@ test = Let (Name "myList")
                [ Var (Name "add")
                , Lit (LNum 0)
                , Var (Name "myList") ]
+```
+:::
 
+::: column
+```hs
 main = do
     res <- synth (getExamples test) 3
     case res of
       Just x -> print x
       _ -> print "No solution found"
-
 ```
 :::
+:::
 
-::: {.column width=45%}
+## Synthesizing guards
+
 ```{.hs style="font-size: 0.8em;"}
 ******** Synthesizing guards for program:
 let myList = "abcdefghijklmnopqrstuvwxyz" in
@@ -311,8 +316,6 @@ width > 10
 ```
 
 \* real output
-:::
-:::
 
 
 # Future work

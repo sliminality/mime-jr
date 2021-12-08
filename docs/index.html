@@ -3,9 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
-  <meta name="author" content="Slim Lim">
-  <meta name="author" content="Justin Lubin">
-  <title>Code formatting by example</title>
+  <title>index</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -86,7 +84,6 @@
     code span.wa { color: #c54516; font-weight: bold; } /* Warning */
   </style>
   <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/black.css" id="theme">
-  <link rel="stylesheet" href="slim.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
    var mathElements = document.getElementsByClassName("math");
@@ -108,12 +105,44 @@
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide">
-  <h1 class="title">Code formatting by example</h1>
-  <p class="author">Slim Lim</p>
-  <p class="author">Justin Lubin</p>
-</section>
 
+<section class="slide level2">
+
+<table>
+<tbody>
+<tr class="odd">
+<td>title: mime-jr: Code formatting by example</td>
+</tr>
+<tr class="even">
+<td>author:</td>
+</tr>
+<tr class="odd">
+<td>- Slim Lim</td>
+</tr>
+<tr class="even">
+<td>- Justin Lubin</td>
+</tr>
+<tr class="odd">
+<td>slideNumber: true</td>
+</tr>
+<tr class="even">
+<td>height: 850</td>
+</tr>
+<tr class="odd">
+<td>width: 1250</td>
+</tr>
+<tr class="even">
+<td>transition: none</td>
+</tr>
+<tr class="odd">
+<td>css: slim.css</td>
+</tr>
+<tr class="even">
+<td>navigationMode: “linear”</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section>
 <section id="matching-code-style-is-hard" class="title-slide slide level1">
 <h1>Matching code style is hard</h1>
@@ -387,8 +416,8 @@
 <h2>Synthesizing guards</h2>
 <p>Using <strong>bottom-up enumerative synthesis</strong> (<a href="https://people.csail.mit.edu/asolar/SynthesisCourse/Lecture3.htm">Armando Solar-Lezama</a>)</p>
 <div class="columns" style="font-size: 0.8em;">
-<div class="column" style="width:55%;">
-<div class="sourceCode" id="cb13" style="font-size: 0.8em;"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>test <span class="ot">=</span> <span class="dt">Let</span> (<span class="dt">Name</span> <span class="st">&quot;myList&quot;</span>)</span>
+<div class="column">
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>test <span class="ot">=</span> <span class="dt">Let</span> (<span class="dt">Name</span> <span class="st">&quot;myList&quot;</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>           (<span class="dt">Lit</span> (<span class="dt">LStr</span> <span class="st">&quot;abcdefghijklmnopqrstuvwxyz&quot;</span>)) <span class="op">$</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>       <span class="dt">Let</span> (<span class="dt">Name</span> <span class="st">&quot;add&quot;</span>)</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>           (<span class="dt">Lam</span> [<span class="dt">Name</span> <span class="st">&quot;x&quot;</span>, <span class="dt">Name</span> <span class="st">&quot;y&quot;</span>] <span class="op">$</span></span>
@@ -397,30 +426,32 @@
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>           <span class="dt">App</span> (<span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;foldr&quot;</span>)) </span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>               [ <span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;add&quot;</span>)</span>
 <span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>               , <span class="dt">Lit</span> (<span class="dt">LNum</span> <span class="dv">0</span>)</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>               , <span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;myList&quot;</span>) ]</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    res <span class="ot">&lt;-</span> synth (getExamples test) <span class="dv">3</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">case</span> res <span class="kw">of</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">Just</span> x <span class="ot">-&gt;</span> <span class="fu">print</span> x</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>      _ <span class="ot">-&gt;</span> <span class="fu">print</span> <span class="st">&quot;No solution found&quot;</span></span></code></pre></div>
-</div><div class="column" style="width:45%;">
-<div class="sourceCode" id="cb14" style="font-size: 0.8em;"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="op">********</span> <span class="dt">Synthesizing</span> guards for program<span class="op">:</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> myList <span class="ot">=</span> <span class="st">&quot;abcdefghijklmnopqrstuvwxyz&quot;</span> <span class="kw">in</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> add <span class="ot">=</span> \x, y <span class="ot">-&gt;</span> plus x</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                        y <span class="kw">in</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">foldr</span> add</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>          <span class="dv">0</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>          myList</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="op">********</span> <span class="dt">Extracting</span> examples<span class="op">:</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>[(<span class="dt">True</span>,<span class="dv">15</span>),(<span class="dt">False</span>,<span class="dv">1</span>),(<span class="dt">True</span>,<span class="dv">28</span>),(<span class="dt">False</span>,<span class="dv">1</span>),(<span class="dt">False</span>,<span class="dv">1</span>)]</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="op">********</span> <span class="dt">Synthesized</span> guard<span class="op">:</span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>width <span class="op">&gt;</span> <span class="dv">10</span></span></code></pre></div>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>               , <span class="dt">Var</span> (<span class="dt">Name</span> <span class="st">&quot;myList&quot;</span>) ]</span></code></pre></div>
+</div><div class="column">
+<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    res <span class="ot">&lt;-</span> synth (getExamples test) <span class="dv">3</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">case</span> res <span class="kw">of</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">Just</span> x <span class="ot">-&gt;</span> <span class="fu">print</span> x</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>      _ <span class="ot">-&gt;</span> <span class="fu">print</span> <span class="st">&quot;No solution found&quot;</span></span></code></pre></div>
+</div>
+</div>
+</section>
+<section id="synthesizing-guards-2" class="slide level2">
+<h2>Synthesizing guards</h2>
+<div class="sourceCode" id="cb15" style="font-size: 0.8em;"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="op">********</span> <span class="dt">Synthesizing</span> guards for program<span class="op">:</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> myList <span class="ot">=</span> <span class="st">&quot;abcdefghijklmnopqrstuvwxyz&quot;</span> <span class="kw">in</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> add <span class="ot">=</span> \x, y <span class="ot">-&gt;</span> plus x</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                        y <span class="kw">in</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">foldr</span> add</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>          <span class="dv">0</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>          myList</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="op">********</span> <span class="dt">Extracting</span> examples<span class="op">:</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>[(<span class="dt">True</span>,<span class="dv">15</span>),(<span class="dt">False</span>,<span class="dv">1</span>),(<span class="dt">True</span>,<span class="dv">28</span>),(<span class="dt">False</span>,<span class="dv">1</span>),(<span class="dt">False</span>,<span class="dv">1</span>)]</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="op">********</span> <span class="dt">Synthesized</span> guard<span class="op">:</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>width <span class="op">&gt;</span> <span class="dv">10</span></span></code></pre></div>
 <p>* real output</p>
-</div>
-</div>
 </section></section>
 <section id="future-work" class="title-slide slide level1">
 <h1>Future work</h1>
@@ -474,7 +505,7 @@
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: true,
+        slideNumber: false,
 
         // 'all', 'print', or 'speaker'
         showSlideNumber: 'all',
@@ -515,7 +546,7 @@
         rtl: false,
 
         // see https://revealjs.com/vertical-slides/#navigation-mode
-        navigationMode: 'linear',
+        navigationMode: 'default',
 
         // Randomizes the order of slides each time the presentation loads
         shuffle: false,
@@ -579,7 +610,7 @@
         previewLinks: false,
 
         // Transition style (none/fade/slide/convex/concave/zoom)
-        transition: 'none',
+        transition: 'slide',
 
         // Transition speed (default/fast/slow)
         transitionSpeed: 'default',
@@ -595,13 +626,6 @@
         // devices. It is advisable to set this to a lower number than
         // viewDistance in order to save resources.
         mobileViewDistance: 2,
-
-        // The "normal" size of the presentation, aspect ratio will be preserved
-        // when the presentation is scaled to fit different resolutions. Can be
-        // specified using percentage units.
-        width: 1250,
-
-        height: 850,
 
         // reveal.js plugins
         plugins: [

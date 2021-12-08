@@ -70,6 +70,26 @@ bspec = do
             BNot BTrue  `denote` e `shouldBe` False
             BNot BFalse `denote` e `shouldBe` True
 
+    describe "complex guard" $ do
+        it "handles a nontrivial disjunction" $ do
+            let b = (NWidth `BGt` NConst 10) 
+                    `BOr` (NWidth `BEq` NConst 0)
+
+            let e = Let (Name "myList")
+                        (Lit (LStr "abcdefghijklmnopqrstuvwxyz")) $
+                    Let (Name "init")
+                        (Lit (LNum 0)) $
+                    Let (Name "add")
+                        (Lam [Name "x", Name "y"] $
+                             App (Var (Name "plus")) 
+                                 [Var (Name "x"), Var (Name "y")]) $
+                        App (Var (Name "foldr")) 
+                            [ Var (Name "add")
+                            , Var (Name "init")
+                            , Var (Name "myList")
+                            ]
+
+            b `denote` e `shouldBe` True
 
 nspec :: Spec
 nspec = do

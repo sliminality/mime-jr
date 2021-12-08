@@ -1,0 +1,171 @@
+:root {
+    --r-background-color: rgb(247, 246, 243);
+    /* --r-block-margin: #{$blockMargin}; */
+
+    /* Main text */
+    --r-main-font: 'Scala Sans Pro', -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --r-main-font-size: 42px;
+    --r-main-color: #333;
+
+    /* Code */
+    --r-code-font: "SF Mono", Inconsolata, Menlo, Consolas, "Roboto Mono", Liberation Mono, Courier, monospace;
+    --code-line-height: 1.4;
+
+    /* Headings */
+    --r-heading-margin: 0.6em;
+    --r-heading-font: var(--r-main-font);
+    --r-heading-color: #333;
+    --r-heading-letter-spacing: 2px;
+    --r-heading-text-transform: none;
+    /* --r-heading-line-height: #{$headingLineHeight}; */
+    /* --r-heading-text-shadow: #{$headingTextShadow}; */
+    /* --r-heading-font-weight: #{$headingFontWeight}; */
+
+    /* --r-heading1-text-shadow: #{$heading1TextShadow}; */
+    /* --r-heading1-size: #{$heading1Size}; */
+    /* --r-heading2-size: #{$heading2Size}; */
+    /* --r-heading3-size: #{$heading3Size}; */
+    /* --r-heading4-size: #{$heading4Size}; */
+
+    /* Links */
+    /* --r-link-color: #{$linkColor}; */
+    /* --r-link-color-dark: #{darken($linkColor , 15% )}; */
+    /* --r-link-color-hover: #{$linkColorHover}; */
+
+    /* Blockquote */
+    --border-color: #e1e1e1;
+
+    /* Selection */
+    --r-selection-background-color: #d2a1a1;
+    --r-selection-color: var(--main-color);
+}
+
+/*********************************
+ * Inline code
+ *********************************/
+
+.reveal code {
+    /* Font is a bit too big relative to sans-serif. */
+    font-size: 0.8em;
+}
+
+/*********************************
+ * Code blocks
+ *********************************/
+
+div.sourceCode {
+    background-color: #fdfdfd;
+    box-shadow: 0 0 0 1px var(--border-color);
+}
+
+.reveal pre {
+    box-shadow: none;
+    font-size: 0.8em;
+    line-height: var(--code-line-height);
+}
+
+pre > code.sourceCode > span {
+    line-height: var(--code-line-height);
+}
+
+pre.sourceCode {
+    /* For visual consistency with side margins. */
+    padding: 0.5em 0; 
+}
+
+pre > code.sourceCode {
+    /* Allow wrapping code. */
+    white-space: pre-wrap; 
+}
+
+/*********************************
+ * Blockquotes
+ *********************************/
+
+.reveal blockquote {
+    /* Replace the drop shadow with a border. */
+    box-shadow: 0 0 0 3px var(--border-color);
+}
+
+/*********************************
+ * Lists
+ *********************************/
+
+.reveal ul ul,
+.reveal ul ol,
+.reveal ol ol,
+.reveal ol ul {
+    /* More sublist indentation. */
+    margin-left: 80px;
+
+    /* Top margin equal to spacing between list items. */
+    margin-top: calc(var(--r-block-margin) / 2);
+    margin-bottom: var(--r-block-margin);
+}
+
+.reveal ul li,
+.reveal ol li {
+    margin-bottom: calc(var(--r-block-margin) / 2);
+}
+
+/*********************************
+ * Columns
+ *********************************/
+
+.columns {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+div.column {
+    display: block;
+}
+
+div.column:not(:last-of-type) {
+    margin-right: 2rem;
+}
+
+/*********************************
+ * Fonts
+ *********************************/
+
+@font-face {
+  font-family: 'Scala Sans Pro';
+  font-weight: 400;
+  font-style: normal;
+  src:
+    url('./fonts/scalasanspro-regular.woff2') format('woff2'),
+    url('./fonts/scalasanspro-regular.woff') format('woff'),
+    url('./fonts/scalasanspro-regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Scala Sans Pro';
+  font-weight: 800;
+  font-style: normal;
+  src:
+    url('./fonts/scalasanspro-bold.woff2') format('woff2'),
+    url('./fonts/scalasanspro-bold.woff') format('woff'),
+    url('./fonts/scalasanspro-bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Scala Sans Pro';
+  font-weight: 400;
+  font-style: italic;
+  src:
+    url('./fonts/scalasanspro-italic.woff2') format('woff2'),
+    url('./fonts/scalasanspro-italic.woff') format('woff'),
+    url('./fonts/scalasanspro-italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Scala Sans Pro';
+  font-weight: 800;
+  font-style: italic;
+  src:
+    url('./fonts/scalasanspro-bolditalic.woff2') format('woff2'),
+    url('./fonts/scalasanspro-bolditalic.woff') format('woff'),
+    url('./fonts/scalasanspro-bolditalic.ttf') format('truetype');
+}
